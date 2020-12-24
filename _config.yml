@@ -13,31 +13,80 @@
 # you will see them accessed via {{ site.title }}, {{ site.email }}, and so on.
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
-title: Your awesome title
-email: your-email@example.com
-description: >- # this means to ignore newlines until "baseurl:"
-  Write an awesome description for your new site here. You can edit this
-  line in _config.yml. It will appear in your document head meta (for
-  Google search results) and in your feed.xml site description.
-baseurl: "" # the subpath of your site, e.g. /blog
-url: "" # the base hostname & protocol for your site, e.g. http://example.com
-twitter_username: jekyllrb
-github_username:  jekyll
+title: "Perrin Ruth"
+name: "Perrin Ruth"
+email: perrin.ruth@colorado.edu
+url: "https://perrineruth.github.io"
+repository: "perrineruth/perrineruth.github.io"
+
+
+include:
+  - _pages
+  - assets
+  - index.md
+exclude:
+  - TODO.md
+  - README.md
+
+plugins:
+  - jekyll-feed
+  - jekyll-remote-theme
+  - jekyll-include-cache
+  - jekyll-paginate
+  - jekyll-seo-tag
 
 # Build settings
 markdown: kramdown
-theme: minima
-plugins:
-  - jekyll-feed
+# theme: "minimal-mistakes-jekyll"
+remote_theme: "mmistakes/minimal-mistakes"
+minimal_mistakes_skin: "air"
 
-# Exclude from processing.
-# The following items will not be processed, by default. Create a custom list
-# to override the default setting.
-# exclude:
-#   - Gemfile
-#   - Gemfile.lock
-#   - node_modules
-#   - vendor/bundle/
-#   - vendor/cache/
-#   - vendor/gems/
-#   - vendor/ruby/
+# settings for author profile
+author:
+  name   : "Perrin Ruth"
+  #avatar : "/assets/images/headshot.jpg"
+  location: "Boulder, CO"
+  email  : perrin.ruth@colorado.edu
+  github : perrineruth
+  #linkedin: landrynicholas
+  twitter : Perrin_oid
+  #googlescholar : "https://scholar.google.com/citations?user=7xLeZqMAAAAJ"
+  orcid : "https://orcid.org/0000-0003-1417-280X"
+
+# pagination for blog page
+paginate: 5 # number of posts to show
+paginate_path: "/blog/page:num/"
+
+# default YAML front matter
+defaults:
+  # all
+  - scope:
+      path: ""
+    values:
+      layout: single
+      mathjax: true
+      author_profile: true
+      class: wide
+      title: " "
+      title_separator: "|"
+  # posts
+  - scope:
+      type: posts
+    values:
+      toc: true
+      toc_label: "Contents"
+      read_time: true
+  # portfolio
+  - scope:
+      path: ""
+      type: portfolio
+    values:
+      author_profile: false
+      excerpt: ""
+      sidebar:
+        nav: "portfolio"
+
+# collections
+collections:
+  portfolio:
+    output: true
