@@ -1,0 +1,6 @@
+# main navbar
+main:
+    - title: "Home"
+      url: /
+    - title: "About"
+      url: /About

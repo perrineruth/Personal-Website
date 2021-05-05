@@ -23,7 +23,7 @@ repository: "perrineruth/perrineruth.github.io"
 include:
   - _pages
   - assets
-  - index.md
+  - index.html
 exclude:
   - TODO.md
   - README.md
