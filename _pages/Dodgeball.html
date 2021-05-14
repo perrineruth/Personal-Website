@@ -7,7 +7,7 @@ header:
   overlay_color: "#000"
   overlay_filter: "0"
   overlay_image: /assets/images/Dodgeball_img.jpg
-  caption: "Credit: [**Wan San Yip**](www.unsplash.com)"
+  caption: "Credit: [**Wan San Yip**](https://www.unsplash.com)"
   
 usemathjax: true
 ---
@@ -59,9 +59,48 @@ usemathjax: true
 		src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
 	</script>
 
-	<h3> Dodgeball Simulation </h3>
+	<h1> Description </h1>
   
-	<p> This is a description and that is the model: $$Eqn$$</p>
+	<p> 
+		This project started initially as a class project and eventually was 
+		turned into a 
+		<a href="https://journals.aps.org/pre/abstract/10.1103/PhysRevE.102.062302">publication</a> 
+		in Physical Review E. This page provides a dodgeball simulation based upon 
+		the model described in the link above. The model can be described as follows. 
+		There are two teams (1 and 2) that both start with \(N\) players in their 
+		respective court. At any time, Team \(i\) has \(X_i\) players within their 
+		court. Each player throws a ball with rate \(\lambda\). Thus, the throwing 
+		team can be determined by a race condition. For example, Team 1 throws 
+		with probability
+		$$\frac{X_1}{X_1+X_2}.$$
+		A player may choose to throw a ball at the opposing court or friendly 
+		jail. The parameter \(a_i\) gives the probability that a player on Team 
+		\(i\) will target the opposing court. When throwing at the opposing 
+		court, a player has a chance of knocking an opposing player into jail. 
+		When throwing to the friendly jail, the player has a chance of bringing 
+		a teammate back into the game.
+	</p>
+		
+	<p>
+		The parameters \(k_e\) and \(k_j\) give the effectiveness of targeting 
+		the opposing court and jail respectively. Specifically the chance of 
+		successfully hitting an opponent when there are \(X_i\) players in the 
+		opposing court is
+		$$p_e = k_e \frac{X_i}{N}.$$
+		Similarly, when a ball is thrown at \(Y_i = N-X_i\) players in jail, 
+		the probability of saving a player from jail is
+		$$p_j = k_j \frac{Y_i}{N}.$$
+	</p>
+		
+	<p>
+		After adding in some visualizations of these events we arrive at the 
+		following simulation. This page uses the base Javascript HTML DOM to 
+		create its simulation.
+	</p>
+
+	<h1> Simulation: </h1>
+
+	<br>
 
 	<canvas id="myCanvas"  width="800" height="400"></canvas>
   
