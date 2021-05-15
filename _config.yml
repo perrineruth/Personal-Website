@@ -90,3 +90,4 @@ defaults:
 collections:
   portfolio:
     output: true
+theme: jekyll-theme-minimal
