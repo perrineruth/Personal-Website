@@ -90,7 +90,7 @@ function randint(N) {
 ////////// functions to update parameters //////////
 function updateN() {
 	N_new = parseInt(this.value);
-	N_Label.innerHTML = "N = " + N_new + " (Number of Players)";
+	N_Label.innerHTML = "N = " + N_new;
 }
 
 function updateLambda() {
@@ -98,27 +98,27 @@ function updateLambda() {
 	lambda = (10**parseFloat(this.value));
 	// limit digits and scientific notation
 	lambda_text = (lambda.toFixed(3-parseFloat(this.value))*1).toExponential();
-	lambda_Label.innerHTML = "&lambda; = " + lambda_text + " (Player throw rate)";
+	lambda_Label.innerHTML = "&lambda; = " + lambda_text;
 }
 
 function updatea1() {
 	a1 = parseFloat(this.value);
-	a1_Label.innerHTML = "a1 = " + a1 + " (Strategy of Yellow Team)";
+	a1_Label.innerHTML = "a1 = " + a1;
 }
 
 function updatea2() {
 	a2 = parseFloat(this.value);
-	a2_Label.innerHTML = "a2 = " + a2 + " (Strategy of Blue Team)";
+	a2_Label.innerHTML = "a2 = " + a2;
 }
 
 function updateke() {
 	ke = parseFloat(this.value);
-	ke_Label.innerHTML = "ke = " + ke + " (Effectiveness Targeting Opponent Court)";
+	ke_Label.innerHTML = "ke = " + ke;
 }
 
 function updatekj() {
 	kj = parseFloat(this.value);
-	kj_Label.innerHTML = "kj = " + kj + " (Effectiveness Targeting Jail)";
+	kj_Label.innerHTML = "kj = " + kj;
 }
 
 
@@ -302,28 +302,38 @@ function generatePlayers() {
 	Court1 = []; 	Court2 = [];
 	Jail1 = []; 	Jail2 = [];
 	X1 = N;			X2 = N;
-	// left team
-	for (var i=0; i<N; i++){
-		// X coordinate by court edge
-		var X = (.475)*theCanvas.width; 			// pos at the right
-		// y position, 3.25 to adjust center of head -> center of player
-		if (N > 1) 			{ var Y = (i/(N-1)*.9+.05)*theCanvas.height-6.5; } // evenly spaced 
-		else if (N = 1) 	{ var Y = 1/2*theCanvas.height-6.5; }
-		else 				{ alert("error") }
-		Team1.push(new Player(X, Y, 1));
-		Court1.push(i);		// say they're in the court to start
-		Team1[i].draw();	// initially draw out the circles
+	
+	// generate objects for each player
+	var PlayersRemaining = N; // stagger by 10s
+	var j = 0;
+	while (PlayersRemaining > 0){
+		var row = 10;
+		var Temp = Math.min(row,PlayersRemaining);
+		for (var i=0; i<Temp; i++){
+			// X coordinate by court edge
+			var xy = (.475-0.03*j)*theCanvas.width;
+			var xb = (.525+0.03*j)*theCanvas.width;
+			// y position, 3.25 to adjust center of head -> center of player
+			if (Temp > 1) 		{ var Y = (i/(Temp-1)*.9+.05)*theCanvas.height-6.5; } // evenly spaced 
+			else if (Temp = 1) 	{ var Y = 1/2*theCanvas.height-6.5; }
+			else 				{ alert("error") }
+			// team 2
+			Team1.push(new Player(xy, Y, 1));
+			Court1.push(10*j+i);		// say they're in the court to start
+			// team 1
+			Team2.push(new Player(xb, Y, 2));
+			Court2.push(10*j+i);
+		}
+		PlayersRemaining -= row;
+		j++;
 	}
-	// right team
-	for (var i=0; i<N; i++){
-		var X = (.525)*theCanvas.width;
-		if (N > 1) 			{ var Y = (i/(N-1)*.9+.05)*theCanvas.height-6.5; } // evenly spaced 
-		else if (N = 1) 	{ var Y = 1/2*theCanvas.height-6.5; }
-		else 				{ alert("error") }
-		Team2.push(new Player(X, Y, 2));
-		Court2.push(i);
-		Team2[i].draw();
+	
+	// initial plot of players...
+	for (var i=0; i<N; i++) {
+		Team1[i].draw()
+		Team2[i].draw()
 	}
+	
 }
 
 // Initially draw out the players and court and create a ball
@@ -352,6 +362,7 @@ function Reset() {
 	Counter = Math.floor(exp(2*N*lambda)/0.0050);
 	tn = 0;
 	state = "wait";
+	Complete = 0;
 	
 	// make sure no player pauses
 	Target = "Null"
@@ -390,15 +401,18 @@ Counter = Math.floor(exp(2*N*lambda)/0.005);
 function frame() {
 	// check win conditions
 	if (X1 == 0 || X2 == 0) {
-		pause();
-		var ctx = canvasContext;
-		ctx.font = "20px Georgia";
-		if (X1 > 0 && X2 == 0) {
-			ctx.fillText("Yellow Team Wins!", 0.175*theCanvas.width,0.5*theCanvas.height+10);
-		} else if (X1 == 0 && X2 > 0) {
-			ctx.fillText("Blue Team Wins!", 0.525*theCanvas.width,0.5*theCanvas.height+10);
+		if (!Complete) {
+			pause();
+			var ctx = canvasContext;
+			ctx.font = "20px Georgia";
+			if (X1 > 0 && X2 == 0) {
+				ctx.fillText("Yellow Team Wins!", 0.175*theCanvas.width,0.5*theCanvas.height+10);
+			} else if (X1 == 0 && X2 > 0) {
+				ctx.fillText("Blue Team Wins!", 0.525*theCanvas.width,0.5*theCanvas.height+10);
+			}
+			Complete = 1;
 		}
-		
+		else { pause(); }
 	}
 	else{
 	
@@ -407,7 +421,6 @@ function frame() {
 	
 	// redraw court boundaries
 	drawCourt();
-	
 	
 	// evaluate state
 	// extra { } are for shrinking cases not for a functional purpose
