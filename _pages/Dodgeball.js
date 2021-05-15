@@ -3,6 +3,9 @@
 // canvas details
 var theCanvas=document.getElementById("myCanvas");
 var canvasContext=theCanvas.getContext("2d");
+// force decent resolution even if it isn't variable...
+theCanvas.width = 800;
+theCanvas.height = 400;
 // parameters
 var N = 25;
 var N_new = N; // placeholder for when updated
@@ -21,8 +24,9 @@ var tn = 0;
 var counter;
 var state = "wait";
 var Speedup;
-// tracking purpose for throw
+// tracking purpose for throw (state parameters)
 var Team, Aim, Target;
+var Complete = 0; // game ended
 
 
 
@@ -37,6 +41,7 @@ var force_btn = document.getElementById("Force");    // force ball throw
 force_btn.addEventListener("click", ForceThrow)
 var accelerator = document.getElementById("accelerate"); // speed up game
 accelerator.addEventListener("change", accelerate);
+
 
 
 ////////// parameter sliders //////////
@@ -141,16 +146,16 @@ function Player(x,y,Team) {
 		
 		// head
         ctx.beginPath();
-		var r = 3.5; // radius
+		var r = 7; // radius
         ctx.arc(this.x, this.y, r, 0, Math.PI*2, true);
         ctx.closePath();
 		ctx.fill();
 		
 		// body
 		ctx.beginPath();
-		ctx.moveTo(this.x-5,this.y+10);
-		ctx.lineTo(this.x+5,this.y+10);
-		ctx.lineTo(this.x,this.y-2);
+		ctx.moveTo(this.x-10,this.y+20);
+		ctx.lineTo(this.x+10,this.y+20);
+		ctx.lineTo(this.x,this.y-4);
 		ctx.closePath();
 		ctx.fill();
     }
@@ -187,8 +192,8 @@ function Player(x,y,Team) {
 
 	// for randomly moving... makes it more function
 	this.shuffle = function() {
-		this.x = this.x + 2*Math.random() - 1;
-		this.y = this.y + Math.random() - .5;
+		this.x = this.x + 4*Math.random() - 2;
+		this.y = this.y + 2*Math.random() - 1;
 		this.bound();
 	}
 	
@@ -197,25 +202,25 @@ function Player(x,y,Team) {
 		// left and right limits
 		if (this.Team == 1) {
 			if (this.Status) {
-				Left 	= 	(.15+.0125)*theCanvas.width;
-				Right 	= 	(.5-.0125)*theCanvas.width;
+				Left 	= 	(.15+.025)*theCanvas.width;
+				Right 	= 	(.5-.025)*theCanvas.width;
 			} else {
-				Left 	= 	(.85+.0125)*theCanvas.width;
-				Right 	= 	(1-.0125)*theCanvas.width;
+				Left 	= 	(.85+.025)*theCanvas.width;
+				Right 	= 	(1-.025)*theCanvas.width;
 			}
 		} else if (this.Team == 2) {
 			if (this.Status) {
-				Left 	= 	(.5+.0125)*theCanvas.width;
-				Right 	= 	(.85-.0125)*theCanvas.width;
+				Left 	= 	(.5+.025)*theCanvas.width;
+				Right 	= 	(.85-.025)*theCanvas.width;
 			} else {
-				Left 	= 	(0+.0125)*theCanvas.width;
-				Right 	= 	(.15-.0125)*theCanvas.width;
+				Left 	= 	(0+.025)*theCanvas.width;
+				Right 	= 	(.15-.025)*theCanvas.width;
 			}
 		} else { alert("error: invalid team") }
 		
 		// upper and lower limits 3.25 adjust mismatch in centers
-		Top = .975*theCanvas.height - 3.25;
-		Bottom = .025*theCanvas.height - 3.25;
+		Top = .95*theCanvas.height - 6.5;
+		Bottom = .05*theCanvas.height - 6.5;
 		
 		this.x = Math.max(Math.min(this.x,Right),Left);
 		this.y = Math.max(Math.min(this.y,Top),Bottom);
@@ -240,7 +245,7 @@ function Ball() {
 	// draw ball in play
 	this.toss = function(ctx) {
 		ctx.beginPath();
-		var r = 3.5;
+		var r = 7;
 		ctx.arc(this.x, this.y, r, 0, Math.PI*2, true);
 		ctx.closePath();
 		ctx.fillStyle = "#D41159"; // Red
@@ -250,13 +255,13 @@ function Ball() {
 	// draw ball when it hits
 	this.hit = function(ctx) {
 		ctx.beginPath();
-		ctx.moveTo(this.x-4,  this.y-6);
-		ctx.lineTo(this.x-3,  this.y-2); 	ctx.lineTo(this.x-6,  this.y+2);
-		ctx.lineTo(this.x-2,  this.y+1.5); 	ctx.lineTo(this.x-3,  this.y+6);
-		ctx.lineTo(this.x-1,  this.y+2.5); 	ctx.lineTo(this.x+3,  this.y+4);
-		ctx.lineTo(this.x+2,  this.y+1.5); 	ctx.lineTo(this.x+6,  this.y-.5);
-		ctx.lineTo(this.x+1.5,this.y-2.25); ctx.lineTo(this.x+1.5,this.y-6);
-		ctx.lineTo(this.x-1.5,this.y-2.75);
+		ctx.moveTo(this.x-8,  this.y-12);
+		ctx.lineTo(this.x-6,  this.y-4); 	ctx.lineTo(this.x-12, this.y+4);
+		ctx.lineTo(this.x-4,  this.y+3); 	ctx.lineTo(this.x-6,  this.y+12);
+		ctx.lineTo(this.x-2,  this.y+5); 	ctx.lineTo(this.x+6,  this.y+8);
+		ctx.lineTo(this.x+4,  this.y+3); 	ctx.lineTo(this.x+12, this.y-1);
+		ctx.lineTo(this.x+3,  this.y-4.5);  ctx.lineTo(this.x+3,  this.y-12);
+		ctx.lineTo(this.x-3,  this.y-5.5);
 		ctx.closePath();
 		ctx.fillStyle = "#D41159"; // Red
 		ctx.fill();
@@ -300,10 +305,10 @@ function generatePlayers() {
 	// left team
 	for (var i=0; i<N; i++){
 		// X coordinate by court edge
-		var X = (1*.325+.1625)*theCanvas.width; 			// pos at the right
+		var X = (.475)*theCanvas.width; 			// pos at the right
 		// y position, 3.25 to adjust center of head -> center of player
-		if (N > 1) 			{ var Y = (i/(N-1)*.95+.025)*theCanvas.height-3.25; } // evenly spaced 
-		else if (N = 1) 	{ var Y = 1/2*theCanvas.height-3.25; }
+		if (N > 1) 			{ var Y = (i/(N-1)*.9+.05)*theCanvas.height-6.5; } // evenly spaced 
+		else if (N = 1) 	{ var Y = 1/2*theCanvas.height-6.5; }
 		else 				{ alert("error") }
 		Team1.push(new Player(X, Y, 1));
 		Court1.push(i);		// say they're in the court to start
@@ -311,9 +316,9 @@ function generatePlayers() {
 	}
 	// right team
 	for (var i=0; i<N; i++){
-		var X = (0*.325+.5125)*theCanvas.width;
-		if (N > 1) 			{ var Y = (i/(N-1)*.95+.025)*theCanvas.height-3.25; } // evenly spaced 
-		else if (N = 1) 	{ var Y = 1/2*theCanvas.height-3.25; }
+		var X = (.525)*theCanvas.width;
+		if (N > 1) 			{ var Y = (i/(N-1)*.9+.05)*theCanvas.height-6.5; } // evenly spaced 
+		else if (N = 1) 	{ var Y = 1/2*theCanvas.height-6.5; }
 		else 				{ alert("error") }
 		Team2.push(new Player(X, Y, 2));
 		Court2.push(i);
@@ -485,9 +490,9 @@ function frame() {
 			state = "in_air";
 			break; }
 		case "in_air": {
-			if (tn <= dist * 1.5 && (!Speedup)) {
-				ball.x = z0[0]*(1-tn/(dist * 1.5)) + z1[0]*tn/(dist * 1.5);
-				ball.y = z0[1]*(1-tn/(dist * 1.5)) + z1[1]*tn/(dist * 1.5);
+			if (tn <= (dist*.75) && (!Speedup)) {
+				ball.x = z0[0]*(1-tn/(dist*.75)) + z1[0]*tn/(dist*.75);
+				ball.y = z0[1]*(1-tn/(dist*.75)) + z1[1]*tn/(dist*.75);
 				ball.Status = "toss";
 				tn+=1;
 				//alert("here");

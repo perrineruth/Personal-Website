@@ -45,7 +45,7 @@ usemathjax: true
 	  margin-left: auto;
 	  margin-right: auto;
 	  display: block;
-	  <!--width: 66%;-->
+	  width: 66%;
 	  height: width/2;
 	  border: black 5px solid;
 	  background: #f8f8f8;
@@ -72,7 +72,9 @@ usemathjax: true
 		court. Each player throws a ball with rate \(\lambda\). Thus, the throwing 
 		team can be determined by a race condition. For example, Team 1 throws 
 		with probability
-		$$\frac{X_1}{X_1+X_2}.$$
+		
+		$$P_1=\frac{X_1}{X_1+X_2}.$$
+		
 		A player may choose to throw a ball at the opposing court or friendly 
 		jail. The parameter \(a_i\) gives the probability that a player on Team 
 		\(i\) will target the opposing court. When throwing at the opposing 
@@ -86,30 +88,42 @@ usemathjax: true
 		the opposing court and jail respectively. Specifically the chance of 
 		successfully hitting an opponent when there are \(X_i\) players in the 
 		opposing court is
+		
 		$$p_e = k_e \frac{X_i}{N}.$$
+		
 		Similarly, when a ball is thrown at \(Y_i = N-X_i\) players in jail, 
 		the probability of saving a player from jail is
+		
 		$$p_j = k_j \frac{Y_i}{N}.$$
 	</p>
-		
+	
 	<p>
-		After adding in some visualizations of these events we arrive at the 
-		following simulation. This page uses the base Javascript HTML DOM to 
-		create its simulation.
+		In total, the relevant parameters for this model are:
+		<ul>
+			<li>\(N=\ \)Number of players per team,</li>
+			<li>\(\lambda=\ \)Throw rate of an individual player,</li>
+			<li>\(a_1=\ \)Probability a player on Team 1 (yellow) targets an opposing player,</li>
+			<li>\(a_2=\ \)Probability a player on Team 2 (blue) targets an opposing player,</li>
+			<li>\(k_e=\ \)Effectiveness of targeting an opposing player,</li>
+			<li>\(k_j=\ \)Effectiveness of targeting a teammate in jail.</li>
+		</ul>
 	</p>
+		
 
 	<h1> Simulation: </h1>
 
-	<br>
+	<p> This page uses the base Javascript HTML DOM to create its simulation. </p>
 
-	<canvas id="myCanvas"  width="800" height="400"></canvas>
+	
+	<canvas id="myCanvas"	></canvas>
+  
   
 	<br>
   
 	<!-- buttons for controlling plot behavior -->
-	<button id="start" style="position: relative; left: 17%; width: 10%;">start</button>
-	<button id="pause" style="position: relative; left: 20%; width: 10%;" >pause</button>
-	<button id="reset" style="position: relative; left: 52%; width: 10%;">reset</button>
+	<button id="start" style="position: relative; left: 17%; width: 15%;">start</button>
+	<button id="pause" style="position: relative; left: 20%; width: 15%;" >pause</button>
+	<button id="reset" style="position: relative; left: 37%; width: 15%;">reset</button>
   
 	<br><hr>
   
@@ -120,44 +134,44 @@ usemathjax: true
 	<!-- N -->
 	<div class="slidecontainer">
 		<input type="range" min="1" max="100" value="25" class="slider" id="NRange" style="width: 80%;"> <br>
-		<p id="NLabel" style="font-size: 12pt;"> N = 25 (Number of Players) </p>
+		<p id="NLabel" style="font-size: 12pt;"> N = 25 </p>
 	</div>
   
 	<!-- lambda -->
 	<div class="slidecontainer">
 		<input type="range" min="-3.5" max="1" step = ".25" value="-2" class="slider" id="LambdaRange" style="width: 80%;"> <br>
-		<p id="LambdaLabel" style="font-size: 12pt;"> &lambda; = 1e-2 (Player throw rate) </p>
+		<p id="LambdaLabel" style="font-size: 12pt;"> &lambda; = 1e-2 </p>
 	</div>
   
 	<!-- a1,a2 -->
 	<div class="slidecontainer">
 		<input type="range" min="0" max="1" value=".5" step="0.001"
 		class="slider" id="a1Range" style="width: 80%;">
-		<p id="a1Label" style="font-size: 12pt;"> a1 = 0.5 (Strategy of Yellow Team) </p>
+		<p id="a1Label" style="font-size: 12pt;"> a1 = 0.5 </p>
 	</div>
     <div class="slidecontainer">
 		<input type="range" min="0" max="1" value=".5" step="0.001"
 		class="slider" id="a2Range" style="width: 80%;">
-		<p id="a2Label" style="font-size: 12pt"> a2 = 0.5 (Strategy of Blue Team) </p>
+		<p id="a2Label" style="font-size: 12pt"> a2 = 0.5 </p>
 	</div>
 
 	<!-- ke and kj -->
 	<div class="slidecontainer">
 		<input type="range" min="0" max="1" value=".667" step="0.001" class="slider" id="keRange" style="width: 80%;">
-		<p id="keLabel" style="font-size: 12pt;"> ke = 0.667 (Effectiveness Targeting Opponent Court) </p>
+		<p id="keLabel" style="font-size: 12pt;"> ke = 0.667 </p>
 	</div>
     <div class="slidecontainer">
 		<input type="range" min="0" max="1" value=".333" step="0.001" class="slider" id="kjRange" style="width: 80%;">
-		<p id="kjLabel" style="font-size: 12pt"> kj = 0.333 (Effectiveness Targeting Jail) </p>
+		<p id="kjLabel" style="font-size: 12pt"> kj = 0.333 </p>
 	</div>
 
 	<h6> Additional Options: </h6>
 	<p> Methods for accelerating the game. Accelerate removes pauses between throws and makes the ball speed infinite. </p>
-	<div style="display: inline-block; width: 30%;">
-		<button id="Force" style="position: relative; left: 0%; width: 50%;">Force Throw</button>
+	<div style="display: inline-block; width: 40%;">
+		<button id="Force" style="position: relative; left: 0%; width: 75%;">Force Throw</button>
 	</div>
 	
-	<div style="display: inline-block; width: 30%;">
+	<div style="display: inline-block; width: 40%;">
 		<input type="checkbox" id="accelerate" name="accelerate" style="display: inline;">
 		<label for="accelerate" style="display: inline;"> Accelerate Game</label>
 	</div>
