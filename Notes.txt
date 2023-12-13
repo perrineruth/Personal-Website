@@ -1,0 +1,6 @@
+To test locally
+
+In Git Bash run
+
+	cd filepath
+	bundle exec jekyll serve
